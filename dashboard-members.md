@@ -3,7 +3,7 @@
 **Figma Reference:** `https://www.figma.com/design/P0NIrQu6tBCHt0IPt721VM/FE-Assignment-2?node-id=306-15`  
 **Architecture:** Feature-Driven Development (FDD) + Clean Architecture + Atomic Design + Test-Driven Development (TDD)  
 **Tech Stack:** Next.js 14+ (App Router), TypeScript, Tailwind CSS, Lucide React, Vitest, React Testing Library  
-**API Stack:** Next.js Route Handlers + Web Standard Fetch API + Node.js
+**API Stack:** Next.js Route Handlers + Web Standard Fetch API + Local JSON Storage (`data/members.json`)
 
 ---
 
@@ -12,28 +12,32 @@
 Implementasi Front-End untuk Dashboard Member yang mengelola data anggota organisasi/tim (CRUD: Create, Read, Update, Delete) dengan tampilan metrik KPI, pencarian real-time, bulk action selection, dialog konfirmasi, dan modal feedback sukses.
 
 ### Vertical Slices (Per-Feature):
-1. Setup fondasi, entity, JSON store, dan shared atoms.
-2. Read Flow (Dashboard utama, 4 KPI Card, dan live search).
-3. Multi-select checkbox dan Client-side CSV Export.
-4. Add Member + Form validation + Popup Success Add.
-5. Edit Member + Form load + Popup Success Update.
-6. Delete Member (Single & Bulk) + Modal Confirm + Popups.
-7. Full verification test & visual alignment dengan Figma.
-8. **Feedback Popups**:
-   - `Popup Success Add` 
-   - `Popup Success Update` 
-   - `Popup Success Delete (Single)`
-   - `Popup Success Delete (Multiple)`
+1. **Foundation & Domain**: Entity, types, local JSON store, dan shared atomic design components.
+2. **Read Flow**: Dashboard utama, 4 KPI Card, data table, dan live search.
+3. **Multi-Selection & Export**: Multi-select checkbox dan Client-side CSV Export.
+4. **Add Member**: Form validation + input form + modal feedback `Popup Success Add`.
+5. **Edit Member**: Form input + metadata update + modal feedback `Popup Success Update`.
+6. **Delete Member**: Single & Bulk delete + modal dialog konfirmasi + `Popup Success Delete (Single & Multiple)`.
 
 ---
 
-## 2. Standar Response Envelope
+## 2. Standar Response
+
+Endpoint: `/api/members` dan `/api/members/[id]`
+
 - **Format Sukses:**
   ```json
   {
     "success": true,
-    "data": { ... },
-    "metrics": { ... },
+    "data": [ ... ],
+    "metrics": {
+      "totalMembers": 12,
+      "activeNow": 8,
+      "activePercentage": 67,
+      "departmentsCount": 4,
+      "pendingInvites": 2,
+      "expiringSoon": 3
+    },
     "message": "Operasi berhasil"
   }
   ```
@@ -48,107 +52,110 @@ Implementasi Front-End untuk Dashboard Member yang mengelola data anggota organi
 
 ---
 
-## 3. Directory Structure
+## 3. Directory Structure (Clean Architecture + FDD)
+
+Struktur direktori :
 
 ```
-assignment2/dashboar-members/
+dashboar-members/
 ├── data/
-│   └── members.json
+│   └── members.json                       # Mock database lokal JSON
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
+│   │   ├── layout.tsx                     # Root Layout HTML & Fonts
+│   │   ├── globals.css                    # Tailwind CSS imports
+│   │   ├── page.tsx                       # Redirect ke /members
 │   │   ├── members/
-│   │   │   ├── page.tsx
-│   │   │   ├── new/page.tsx
-│   │   │   └── [id]/edit/page.tsx
+│   │   │   ├── page.tsx                   # Thin wrapper -> useMemberListController + MemberListTemplate
+│   │   │   ├── new/page.tsx               # Thin wrapper -> useMemberFormController + MemberCreateTemplate
+│   │   │   └── [id]/edit/page.tsx         # Thin wrapper -> useMemberFormController(id) + MemberEditTemplate
 │   │   └── api/
 │   │       └── members/
-│   │           ├── route.ts
-│   │           └── [id]/route.ts
+│   │           ├── member-storage.ts      # Node.js fs/promises storage helper untuk data/members.json
+│   │           ├── route.ts               # GET (list & metrics), POST (create), DELETE (bulk)
+│   │           └── [id]/route.ts          # GET (by id), PUT (update), DELETE (single)
 │   │
 │   ├── shared/
-│   │   ├── atoms/
+│   │   ├── atoms/                         # Atomic Design Atoms
 │   │   │   ├── button.tsx
 │   │   │   ├── input.tsx
 │   │   │   ├── checkbox.tsx
 │   │   │   ├── badge.tsx
 │   │   │   ├── avatar.tsx
 │   │   │   ├── card.tsx
-│   │   │   └── typography.tsx
+│   │   │   └── __tests__/
+│   │   │       └── atoms.test.tsx
 │   │   ├── utils/
-│   │   │   ├── cn.ts
-│   │   │   └── csv.ts                        # Client-side CSV export utility
+│   │   │   ├── cn.ts                      # Tailwind merge & clsx utility
+│   │   │   ├── csv.ts                     # Client-side CSV export generator
+│   │   │   └── __tests__/
+│   │   │       └── csv.test.ts
 │   │   └── types/
-│   │       └── api-response.ts
+│   │       └── api-response.ts            # Standard envelope response type
 │   │
-│   └── features/
-│       └── members/
+│   └── feature/                           # Folder singular: "feature"
+│       └── member/
 │           ├── domain/
-│           │   └── member.entity.ts
+│           │   └── member.entities.ts     # Domain Entities, Department, Status, Metrics
 │           │
 │           ├── usecase/
-│           │   ├── member.repository.ts
-│           │   ├── get-members.usecase.ts
+│           │   ├── repositories/
+│           │   │   └── member.repository.interface.ts  # IMemberRepository contract
+│           │   ├── dtos/
+│           │   │   └── member.dto.ts      # Input DTOs & Result DTOs
+│           │   ├── get-member.usecase.ts  # Ambil data member + metrics sekaligus
 │           │   ├── get-member-by-id.usecase.ts
 │           │   ├── create-member.usecase.ts
 │           │   ├── update-member.usecase.ts
 │           │   ├── delete-member.usecase.ts
 │           │   ├── bulk-delete-members.usecase.ts
-│           │   ├── get-member-metrics.usecase.ts
-│           │   └── __tests__/
-│           │       ├── get-members.usecase.test.ts
+│           │   └── __tests__/             # Unit tests usecase
+│           │       ├── get-member.usecase.test.ts
+│           │       ├── get-member-by-id.usecase.test.ts
 │           │       ├── create-member.usecase.test.ts
 │           │       ├── update-member.usecase.test.ts
 │           │       ├── delete-member.usecase.test.ts
-│           │       └── get-member-metrics.usecase.test.ts
-│           │
-│           ├── controller/
-│           │   ├── member.controller.ts
-│           │   └── __tests__/
-│           │       └── member.controller.test.ts
+│           │       └── bulk-delete-members.usecase.test.ts
 │           │
 │           ├── infrastructure/
-│           │   ├── member-json.repository.ts
-│           │   ├── member-api.client.ts
+│           │   ├── member-api.repository.ts  # Implementasi IMemberRepository via fetch('/api/members')
+│           │   │                             # Dilengkapi In-Flight Request Deduplication
 │           │   └── __tests__/
-│           │       └── member-json.repository.test.ts
+│           │       └── member-api.repository.test.ts
+│           │
+│           ├── controller/
+│           │   ├── use-member-list.controller.ts  # Custom Hook Controller untuk halaman list & tabel
+│           │   ├── use-member-form.controller.ts  # Custom Hook Controller untuk form add & edit
+│           │   └── __tests__/
+│           │       ├── use-member-list.controller.test.ts
+│           │       └── use-member-form.controller.test.ts
 │           │
 │           └── presentation/
-│               ├── atoms/
-│               │   └── status-indicator.tsx
 │               ├── molecules/
-│               │   ├── search-input.tsx
-│               │   ├── metric-card.tsx
+│               │   ├── form-field.tsx
 │               │   ├── member-badge.tsx
 │               │   ├── member-cell-info.tsx
-│               │   ├── table-action-buttons.tsx
-│               │   ├── form-field.tsx
-│               │   └── __tests__/
-│               │       ├── metric-card.test.tsx
-│               │       └── search-input.test.tsx
+│               │   ├── metric-card.tsx
+│               │   ├── search-input.tsx
+│               │   └── table-action-buttons.tsx
 │               ├── organisms/
-│               │   ├── metrics-grid.tsx
+│               │   ├── delete-modal.tsx
+│               │   ├── member-empty-state.tsx
+│               │   ├── member-form.tsx
 │               │   ├── members-table.tsx
 │               │   ├── members-toolbar.tsx
-│               │   ├── member-form.tsx
-│               │   ├── delete-modal.tsx
+│               │   ├── metrics-grid.tsx
 │               │   └── success-popup.tsx
-│               ├── views/
-│               │   ├── member-list-view.tsx
-│               │   ├── member-create-view.tsx
-│               │   └── member-edit-view.tsx
-│               └── hooks/
-│                   ├── use-members.ts
-│                   ├── use-member-form.ts
-│                   └── use-bulk-selection.ts
+│               └── templates/
+│                   ├── member-list.template.tsx
+│                   ├── member-create.template.tsx
+│                   └── member-edit.template.tsx
 ```
 
 ---
 
-## 4. Initial Seed Data
+## 4. Initial Seed Data (`data/members.json`)
 
-Data awal di `data/members.json` memuat data:
 ```json
 [
   {
@@ -158,6 +165,8 @@ Data awal di `data/members.json` memuat data:
     "role": "Staff Frontend Engineer",
     "department": "Engineering",
     "status": "Active",
+    "employmentType": "Full-time",
+    "bio": "Frontend architecture lead responsible for design system integration and core web vitals.",
     "joinedDate": "2024-01-15",
     "lastActive": "Just now",
     "avatarBgColor": "bg-indigo-100 text-indigo-700"
