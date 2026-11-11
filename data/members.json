@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Listyo Legit",
+    "email": "listtyo@gmail.com",
+    "role": "Cyber Security",
+    "department": "Operations",
+    "status": "Active",
+    "employmentType": "Full-time",
+    "bio": "",
+    "lastActive": "Just now",
+    "avatarBgColor": "bg-emerald-100 text-emerald-700",
+    "id": "mem_1794307976983_8k1y",
+    "joinedDate": "2026-11-10"
+  },
+  {
+    "name": "Ferdi Sambo",
+    "email": "ferdisambo@gmail.com",
+    "role": "FE",
+    "department": "Engineering",
+    "status": "Inactive",
+    "employmentType": "Full-time",
+    "bio": "",
+    "lastActive": "Just now",
+    "avatarBgColor": "bg-cyan-100 text-cyan-700",
+    "id": "mem_1794305570129_kmyw",
+    "joinedDate": "2026-11-10"
+  },
+  {
+    "name": "Herdiansyah -",
+    "email": "herdiiyan8@gmail.com",
+    "role": "Frontend engineering",
+    "department": "Engineering",
+    "status": "Pending",
+    "employmentType": "Full-time",
+    "bio": "",
+    "lastActive": "Just now",
+    "avatarBgColor": "bg-purple-100 text-purple-700",
+    "id": "mem_1794297250326_zf5e",
+    "joinedDate": "2026-11-10"
+  },
+  {
+    "id": "mem_01",
+    "name": "Sarah Jenkins",
+    "email": "sarah.jenkins@company.com",
+    "role": "Staff Frontend Engineer",
+    "department": "Engineering",
+    "status": "Active",
+    "employmentType": "Full-time",
+    "bio": "Frontend architecture lead responsible for design system integration and core web vitals.",
+    "joinedDate": "2024-01-15",
+    "lastActive": "Just now",
+    "avatarBgColor": "bg-indigo-100 text-indigo-700"
+  },
+  {
+    "id": "mem_02",
+    "name": "Alex Rivera",
+    "email": "alex.rivera@company.com",
+    "role": "Tech Lead",
+    "department": "Engineering",
+    "status": "Active",
+    "joinedDate": "2023-08-20",
+    "lastActive": "5 minutes ago",
+    "avatarBgColor": "bg-emerald-100 text-emerald-700"
+  },
+  {
+    "id": "mem_03",
+    "name": "Michael Phelps",
+    "email": "michael.phelps@company.com",
+    "role": "Product Designer",
+    "department": "Design",
+    "status": "Active",
+    "joinedDate": "2024-03-10",
+    "lastActive": "1 hour ago",
+    "avatarBgColor": "bg-purple-100 text-purple-700"
+  },
+  {
+    "id": "mem_04",
+    "name": "Jessica Taylor",
+    "email": "jessica.t@company.com",
+    "role": "Product Manager",
+    "department": "Product",
+    "status": "Pending",
+    "joinedDate": "2026-11-01",
+    "lastActive": "2 days ago",
+    "avatarBgColor": "bg-amber-100 text-amber-700"
+  },
+  {
+    "id": "mem_05",
+    "name": "David Kim",
+    "email": "david.kim@company.com",
+    "role": "Backend Engineer",
+    "department": "Engineering",
+    "status": "Active",
+    "joinedDate": "2024-05-12",
+    "lastActive": "10 minutes ago",
+    "avatarBgColor": "bg-blue-100 text-blue-700"
+  }
+]
